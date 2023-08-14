@@ -65,3 +65,51 @@ export function uploadImage({ file }) {
     return response.json();
   });
 }
+
+export function uploadPost ({token}, description, imageUrl) {
+  return fetch(postsHost, {
+    method: "POST",
+    body: JSON.stringify({
+      description,
+      imageUrl,
+    }),
+    headers: {
+      Authorization: token,
+    },
+  })
+  .then((response) => {
+    if (response.status === 400) {
+      throw new Error("В теле запроса не передан description или imageUrl");
+    }
+    return response.json();
+  });
+};
+export function addDisLike ({ token }, {id}, islike) {
+  return fetch(`${postsHost}/${id}/${islike}`, {
+    method: "POST",
+    headers: {
+      Authorization: token,
+    },
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      }
+      throw new Error("Нет авторизации");
+    })
+};
+export function deletePost({ token }, {id}) {
+  return fetch(`${postsHost}/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: token,
+    },
+  })
+    .then((response) => {
+        return response.json();
+      })
+    .then((data) => {
+      console.log(data);
+      return data;
+    });
+};
