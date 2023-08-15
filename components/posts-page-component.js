@@ -76,20 +76,11 @@ export function renderUserPosts({ appEl }) {
   const appHtml = `
   <div class="page-container">
     <div class="header-container"></div>
-    <div class="posts-user-header">
-      <div class="posts-user-header__user-block">
-      <img src=${postsAuthor.imageUrl} class="posts-user-header__user-image">
-      <p class="posts-user-header__user-name" id="shareLink">${postsAuthor.name}</p>
-      </div>
+    <div class="posts-user-header">    
     </div>
     ${posts[0] ?
       `<div id="blockPosts" class="blockPosts">
-      <div class="gallery">
-        <ul class="">
-         ${postsHtml}
-        </ul>
-      </div>
-      </div>` :
+           </div>` :
       '<h3 class="form-title">Добавьте сюда фотографии, чтобы заполнить профиль</h3>'}
   </div>`;
 
