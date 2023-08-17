@@ -41,21 +41,7 @@ export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
       element: document.querySelector(".header-container"),
     });
 
-    /*renderUserPosts({
-      appEl: document.querySelector(".my-posts-container"),
-      
-    })*/
-    const deleteEls = document.querySelectorAll(".delete-button");
-    for (const delEl of deleteEls) {
-      delEl.style.display = "block";
-      delEl.addEventListener("click", (event) => {
-        event.stopPropagation();
-        if(confirm("Вы точно хотите удалить фото?")){
-          onDeleteClick({ id: delEl.dataset.postId })
-        }
-      })
-    }
-    
+     
     document.getElementById("add-button").addEventListener("click", () => {
       if (imageUrl) {
         onAddPostClick({

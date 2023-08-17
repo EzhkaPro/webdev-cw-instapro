@@ -6,6 +6,7 @@
 import { USER_POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage, onClickLike, user } from "../index.js";
+import {deletePost } from "../api.js"
 
 export function renderPostsPageComponent({ appEl }) {
    console.log("Актуальный список постов:", posts);
@@ -37,6 +38,7 @@ export function renderPostsPageComponent({ appEl }) {
   initDoubleClick(".post");
   initDoubleClick(".user-post");
 }
+
 //общий список постов
 function getPost(post) {
   return `
@@ -71,12 +73,12 @@ function getPost(post) {
 
 //пустой список страницы юзера после регистрации
 export function renderUserPosts({ appEl }) {
-  console.log("список постов юзера:",  appEl);
   const postsHtml = posts.map((post) => getUserPost(post)).join("");
   let postsAuthor = posts[0] ? posts[0].user : user;
   const appHtml = `
   <div class="page-container">
     <div class="header-container"></div>
+
     <div class="posts-user-header">
       <div class="posts-user-header__user-block">
       <img src=${postsAuthor.imageUrl} class="posts-user-header__user-image">
@@ -84,11 +86,11 @@ export function renderUserPosts({ appEl }) {
       </div>
     </div>
     ${posts[0] ?
-      `<div id="blockPosts" class="blockPosts">     
-        <ul class="list">
+      `    
+        <ul class="posts">
          ${postsHtml}
         </ul>   
-      </div>` :
+      ` :
       '<h3 class="form-title">Добавьте сюда фотографии, чтобы заполнить профиль</h3>'}
   </div>`;
 
@@ -97,7 +99,38 @@ export function renderUserPosts({ appEl }) {
   renderHeaderComponent({
     element: document.querySelector(".header-container"),
   });
+  initLikeButtons();
+  initDoubleClick(".post");
+  initDoubleClick(".user-post");
 };
+
+function getUserPost(post) {
+ return`
+  <li class="post">
+    <div class="post-image-container">
+       <img class="post-image" src=${post.imageUrl}>
+    </div>
+  <div class="post-likes">
+  <button data-post-id="${post.id}" class="like-button ${post.isLiked ? 'active-like' : 'inactive-like'}">
+    ${post.isLiked ? '<img src="./assets/images/like-active.svg">' : '<img src="./assets/images/like-not-active.svg">'}
+    </button>
+  <p class="post-likes-text">
+  ${(post.likes.at(-1)) ? `Нравится: <strong>${post.likes.at(-1).name}</strong>` : ""}${(post.likes.length - 1 > 0) ? ` 
+  и <strong>еще ${post.likes.length - 1}</strong>` : ""} 
+  </p>
+</div>
+  <p class="post-text">
+    <span class="user-name">${post.user.name}</span>
+    ${post.description}
+  </p>
+  <p class="post-date">
+    19 минут назад
+  </p>
+  ${user ? `${post.user.login === user.login ? `<button data-id="${post.id}" class="delete-button">Удалить пост</button>` : ""}` : ""}
+</li>
+  `
+};// ${formatDistance(new Date(post.createdAt), new Date, { locale: ru })}
+
 
 function initLikeButtons() {
   for (let dislikeEl of document.querySelectorAll('.active-like'))
@@ -126,9 +159,7 @@ function initDoubleClick (postSelector) {
           likeIcon.classList.remove("inactive-like");
           likeIcon.classList.add("active-like");
           likeIcon.classList.add('-loading-like');
-          let heartIconEl = post.querySelector(".heart-icon");
-          heartIconEl.style.display = 'block';
-          onClickLike({ id: likeIcon.dataset.postId }, "like");
+                    onClickLike({ id: likeIcon.dataset.postId }, "like");
         } else {
           likeIcon.classList.remove("active-like");
           likeIcon.classList.add("inactive-like");
@@ -142,34 +173,14 @@ function initDoubleClick (postSelector) {
   }
 }
 
-function getUserPost(post) {
-  return `
-    <li class="post user-post">
-    <div class="post-user-image-container">
-      <img class="user-post-image" src=${post.imageUrl}>
-      </div>
-      <div class="post-footer">
-        <div class="post-info">
-           <div class="post-likes">
-          <button data-post-id="${post.id}" class="like-button ${post.isLiked ? 'active-like' : 'inactive-like'}">
-           ${post.isLiked ? '<img src="./assets/images/like-active.svg">' : '<img src="./assets/images/like-not-active.svg">'}
-          </button>
-          <p class="post-likes-text">
-            ${(post.likes.at(-1)) ? `Нравится: <strong>${post.likes.at(-1).name}</strong>` : ""}${(post.likes.length - 1 > 0) ? ` 
-            и <strong>еще ${post.likes.length - 1}</strong>` : ""} 
-          </p>
-        </div>
 
-        <p class="post-text">
-        <span class="user-name">${post.user.name}</span> 
-        ${post.description}
-        </p>
-        <p class="post-date">
-        Опубликовано 19 минут назад
-        </p>
-      </div>
-      <button class="delete-button" data-post-id="${post.id}"></button>
-    </div>
-  </li>
- `
-};// ${formatDistance(new Date(post.createdAt), new Date, { locale: ru })}
+
+ const deleteElement  = document.querySelectorAll(".delete-button");
+ for (const delEl of deleteElement) {
+  delEl.addEventListener("click", (event) => {
+    event.stopPropagation();
+         deletePost({ token: getToken(), id: delEl.dataset.postId })
+          });
+                   // goToPage(POSTS_PAGE);      
+ }
+ 
