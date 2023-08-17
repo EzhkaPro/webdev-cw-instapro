@@ -69,18 +69,26 @@ function getPost(post) {
   `
 };// ${formatDistance(new Date(post.createdAt), new Date, { locale: ru })}
 
-//пустой список страницы юзера после регистрыции
+//пустой список страницы юзера после регистрации
 export function renderUserPosts({ appEl }) {
+  console.log("список постов юзера:",  appEl);
   const postsHtml = posts.map((post) => getUserPost(post)).join("");
   let postsAuthor = posts[0] ? posts[0].user : user;
   const appHtml = `
   <div class="page-container">
     <div class="header-container"></div>
-    <div class="posts-user-header">    
+    <div class="posts-user-header">
+      <div class="posts-user-header__user-block">
+      <img src=${postsAuthor.imageUrl} class="posts-user-header__user-image">
+      <p class="posts-user-header__user-name" id="shareLink">${postsAuthor.name}</p>
+      </div>
     </div>
     ${posts[0] ?
-      `<div id="blockPosts" class="blockPosts">
-           </div>` :
+      `<div id="blockPosts" class="blockPosts">     
+        <ul class="list">
+         ${postsHtml}
+        </ul>   
+      </div>` :
       '<h3 class="form-title">Добавьте сюда фотографии, чтобы заполнить профиль</h3>'}
   </div>`;
 
@@ -90,7 +98,6 @@ export function renderUserPosts({ appEl }) {
     element: document.querySelector(".header-container"),
   });
 };
-
 
 function initLikeButtons() {
   for (let dislikeEl of document.querySelectorAll('.active-like'))
@@ -106,8 +113,6 @@ function initLikeButtons() {
       onClickLike({ id: likeEl.dataset.postId }, "like");
     })
 };
-
-
 
 function initDoubleClick (postSelector) {
   const posts = document.querySelectorAll(postSelector);
@@ -138,9 +143,8 @@ function initDoubleClick (postSelector) {
 }
 
 function getUserPost(post) {
-
   return `
-    <li class="user-post">
+    <li class="post user-post">
     <div class="post-user-image-container">
       <img class="user-post-image" src=${post.imageUrl}>
       </div>

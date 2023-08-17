@@ -1,5 +1,5 @@
 import { renderHeaderComponent } from "./header-component.js";
-import { renderUserPosts } from "./posts-page-component.js";
+//import { renderUserPosts } from "./posts-page-component.js";
 import { onDeleteClick } from "../index.js"
 import {sanitizeHtml} from "../helpers.js"
 import { renderUploadImageComponent } from "./upload-image-component.js";
@@ -21,8 +21,7 @@ export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
           <textarea class="input textarea" id ="description" rows="4"></textarea>
         </label>
         <button class="button" id="add-button">Добавить</button>
-        </div>  
-      <div class="my-posts-container"></div>
+        </div>    
     </div>
   `;
 
@@ -42,10 +41,10 @@ export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
       element: document.querySelector(".header-container"),
     });
 
-    renderUserPosts({
+    /*renderUserPosts({
       appEl: document.querySelector(".my-posts-container"),
       
-    })
+    })*/
     const deleteEls = document.querySelectorAll(".delete-button");
     for (const delEl of deleteEls) {
       delEl.style.display = "block";
