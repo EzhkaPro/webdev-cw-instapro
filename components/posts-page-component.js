@@ -1,18 +1,19 @@
- /**
-   * TODO: чтобы отформатировать дату создания поста в виде "19 минут назад"
-   * можно использовать https://date-fns.org/v2.29.3/docs/formatDistanceToNow
-   */
-
+/**
+  * TODO: чтобы отформатировать дату создания поста в виде "19 минут назад"
+  * можно использовать https://date-fns.org/v2.29.3/docs/formatDistanceToNow
+  */
+import { ru } from 'date-fns/locale';
+import { formatDistance } from "date-fns";
 import { USER_POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage, onClickLike, user } from "../index.js";
-import {deletePost } from "../api.js"
+import { deletePost } from "../api.js"
 
 export function renderPostsPageComponent({ appEl }) {
-   console.log("Актуальный список постов:", posts);
+  console.log("Актуальный список постов:", posts);
 
-   const postsHtml = posts.map((post) => getPost(post)).join("");
-   //шапка
+  const postsHtml = posts.map((post) => getPost(post)).join("");
+  //шапка
   const appHtml = `
               <div class="page-container">
                 <div class="header-container"></div>
@@ -39,7 +40,6 @@ export function renderPostsPageComponent({ appEl }) {
   initDoubleClick(".user-post");
 }
 
-//общий список постов
 function getPost(post) {
   return `
   <li class="post">
@@ -65,13 +65,12 @@ function getPost(post) {
     ${post.description}
   </p>
   <p class="post-date">
-    19 минут назад
+  ${formatDistance(new Date(post.createdAt), new Date, { locale: ru })}
   </p>
 </li>
   `
-};// ${formatDistance(new Date(post.createdAt), new Date, { locale: ru })}
+};
 
-//пустой список страницы юзера после регистрации
 export function renderUserPosts({ appEl }) {
   const postsHtml = posts.map((post) => getUserPost(post)).join("");
   let postsAuthor = posts[0] ? posts[0].user : user;
@@ -105,7 +104,7 @@ export function renderUserPosts({ appEl }) {
 };
 
 function getUserPost(post) {
- return`
+  return `
   <li class="post">
     <div class="post-image-container">
        <img class="post-image" src=${post.imageUrl}>
@@ -124,12 +123,12 @@ function getUserPost(post) {
     ${post.description}
   </p>
   <p class="post-date">
-    19 минут назад
+  ${formatDistance(new Date(post.createdAt), new Date, { locale: ru })}
   </p>
   ${user ? `${post.user.login === user.login ? `<button data-id="${post.id}" class="delete-button">Удалить пост</button>` : ""}` : ""}
 </li>
   `
-};// ${formatDistance(new Date(post.createdAt), new Date, { locale: ru })}
+};
 
 
 function initLikeButtons() {
@@ -147,7 +146,7 @@ function initLikeButtons() {
     })
 };
 
-function initDoubleClick (postSelector) {
+function initDoubleClick(postSelector) {
   const posts = document.querySelectorAll(postSelector);
   for (let post of posts) {
     let lastClickTime = new Date().getTime();
@@ -159,7 +158,7 @@ function initDoubleClick (postSelector) {
           likeIcon.classList.remove("inactive-like");
           likeIcon.classList.add("active-like");
           likeIcon.classList.add('-loading-like');
-                    onClickLike({ id: likeIcon.dataset.postId }, "like");
+          onClickLike({ id: likeIcon.dataset.postId }, "like");
         } else {
           likeIcon.classList.remove("active-like");
           likeIcon.classList.add("inactive-like");
@@ -173,14 +172,10 @@ function initDoubleClick (postSelector) {
   }
 }
 
-
-
- const deleteElement  = document.querySelectorAll(".delete-button");
- for (const delEl of deleteElement) {
+const deleteElement = document.querySelectorAll(".delete-button");
+for (const delEl of deleteElement) {
   delEl.addEventListener("click", (event) => {
     event.stopPropagation();
-         deletePost({ token: getToken(), id: delEl.dataset.postId })
-          });
-                   // goToPage(POSTS_PAGE);      
- }
- 
+    deletePost({ token: getToken(), id: delEl.dataset.postId })
+  });   
+}
